@@ -1,0 +1,120 @@
+html, body{
+  background-color: #eee;
+}
+#frame {
+  position: relative;
+  height: 600px;
+  width: 1024px;
+  border: 10px solid;
+  margin: 50px auto;
+  background: #fff;
+  border-image: linear-gradient(#9DB2A7, #9DB2A7) 50;
+}
+
+.layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 600px;
+  width: 1024px;
+}
+
+#whiteboard {
+  z-index: 10;
+  opacity: 50%;
+}
+
+#canvas {
+  z-index: 5;
+}
+  
+#ledge {
+  z-index: 15;
+  background-color:#ccc;
+  width:100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+#ledge span, #ledge span label{
+  display: flex;
+  align-items: center;
+}
+
+#ledge span {
+  margin-right: 50px;
+}
+
+.marker, .eraser {
+  display: inline-block;
+  height: 20px;
+  width: 50px;
+  margin: 0 10px;
+}
+
+.marker {
+  border-radius: 50% 20% 20% 50%;
+}
+.eraser {
+  border-radius: 20% 20% 20% 20%;
+  background-color: white;
+}
+
+.marker.black{
+  background-color: black;
+}
+.marker.blue{
+  background-color: blue;
+}
+.marker.red{
+  background-color: red;
+}
+.marker.green{
+  background-color: green;
+}
+
+
+
+[type=radio] { 
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+[type=radio] + .marker, 
+[type=radio] + .eraser,
+[type=radio] + .toolsize {
+  cursor: pointer;
+}
+
+[type=radio]:checked + .marker,
+[type=radio]:checked + .eraser,
+[type=radio]:checked + .toolsize
+{
+  border: 3px solid #333333;
+}
+
+.toolsize {
+  display: inline-block;
+  margin-left: 10px;
+  background-color: #777;
+  border-radius: 50% 50% 50% 50%;
+}
+.toolsize.large{
+  height: 20px;
+  width: 20px;
+}
+.toolsize.medium{
+  height: 16px;
+  width: 16px;
+}
+.toolsize.small{
+  height: 12px;
+  width: 12px;
+}
