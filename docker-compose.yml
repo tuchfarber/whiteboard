@@ -1,0 +1,41 @@
+version: "3.0"
+services:
+  db:
+    image: redis:5.0-alpine
+    container_name: whiteboard.db
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - whiteboard_net
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: whiteboard.server
+    networks:
+      - whiteboard_net
+    environment:
+      REDIS_HOST: whiteboard.db
+      REIDS_PORT: 6379
+      PYTHONUNBUFFERED: 0
+
+  client:
+    image: nginx:1.15
+    container_name: whiteboard.client
+    volumes:
+      - ./client/:/usr/share/nginx/html/:ro
+    networks:
+      - whiteboard_net
+
+  proxy:
+    image: nginx:1.15
+    container_name: whiteboard.proxy
+    ports:
+      - 8710:80
+    networks:
+      - whiteboard_net
+    volumes:
+      - ./proxy.conf:/etc/nginx/nginx.conf:ro
+
+networks:
+  whiteboard_net:

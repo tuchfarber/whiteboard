@@ -1,5 +1,20 @@
-const MARKER_SIZE = 4;
-const ERASER_SIZE = 32;
+const TOOL_COLORS = {
+  white: '#ffffff',
+  red: '#ff0000',
+  green: '#00ff00',
+  blue: '#0000ff',
+  black: '#000000',
+}
+const TOOL_WIDTHS = {
+  small: 4,
+  medium: 8,
+  large: 16,
+};
+
+const NOT_IMPLEMENTED_ERROR = {
+  name: "NotImplentedError",
+  message: "Method not implemented"
+}
 
 const generateGuid = () => {
   function _p8(s) {
@@ -8,6 +23,21 @@ const generateGuid = () => {
   }
   return _p8() + _p8(true) + _p8(true) + _p8();
 }
+
+function eventPromiseGenerator(element, eventtype) {
+  return new Promise((resolve, reject) => {
+    element.addEventListener(eventtype, (event) => {
+        resolve(event.target.value);
+    }, {once: true});
+  });
+}
+
+async function waitForEventByQuery(query, eventtype) {
+  let elements = Array.from(document.querySelectorAll(query))
+  let promises = elements.map(el => eventPromiseGenerator(el, eventtype));
+  return await Promise.race(promises);
+}
+
 
 class Point {
   constructor(x, y) {
@@ -18,8 +48,8 @@ class Point {
 
 
 class Path {
-  /* 
-    Data will be encoded into the following string to minimize data transfer 
+  /*
+    Data will be encoded into the following string to minimize data transfer
     and storage: "color:width:x,y;x,y;x,y"
   */
   constructor(color, width, points) {
@@ -41,12 +71,10 @@ class Path {
 
   static decode(encodedPath) {
     let [color, width, encPoints] = encodedPath.split(':')
-    console.log(encPoints)
     let points = encPoints.split(';').map(encPoint => {
       let [x, y] = encPoint.split(',')
       return new Point(x, y)
     })
-    console.log(points)
     return new this(color, width, points)
   }
 }
@@ -90,6 +118,7 @@ class Whiteboard {
     this.whiteboard = document.getElementById("whiteboard");
     this.canvas = document.getElementById("canvas");
     this.context = canvas.getContext("2d");
+    this.whiteboardInput = new Ledge();
     this.mousePressed = false;
 
     this.sendPathMethod = sendPathMethod;
@@ -98,17 +127,24 @@ class Whiteboard {
     this.currentPath = null;
     this.prevPoint = null;
 
-    this.toolColor = "black";
-    this.toolWidth = MARKER_SIZE;
-
-    this.addEventListeners();
+    this.toolColor = TOOL_COLORS.black;
+    this.toolWidth = TOOL_WIDTHS.small;
+    this.blankCanvas()
+    this.addWatchers();
   }
 
-  addEventListeners() {
+  blankCanvas(){
+    this.context.fillStyle = "white";
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  addWatchers() {
     this.whiteboard.addEventListener("mousemove", this.handleMouseEvent.bind(this));
     this.whiteboard.addEventListener("mousedown", this.handleMouseEvent.bind(this));
     this.whiteboard.addEventListener("mouseup", this.handleMouseEvent.bind(this));
     this.whiteboard.addEventListener("mouseout", this.handleMouseEvent.bind(this));
+    this.toolWatcher()
+    this.downloadWatcher()
   }
 
   handleMouseEvent(event) {
@@ -146,9 +182,38 @@ class Whiteboard {
     });
   }
 
-  setTool(color, width) {
-    this.toolColor = color;
-    this.toolWidth = width;
+  drawPoint(path) {
+    let point = path.points[0]
+    this.context.fillStyle = path.color;
+    this.context.beginPath();
+    this.context.arc(point.x, point.y, path.width, 0, 2 * Math.PI, true);
+    this.context.fill();
+  }
+
+  async toolWatcher(){
+    var value = null;
+    while(true){
+      value = await this.whiteboardInput.waitForToolChange()
+      if (Object.keys(TOOL_COLORS).includes(value)){
+        this.toolColor = TOOL_COLORS[value];
+      } else if (Object.keys(TOOL_WIDTHS).includes(value)){
+        this.toolWidth = TOOL_WIDTHS[value];
+      }
+    }
+  }
+
+  async downloadWatcher(){
+    let filename = '';
+    let downloadLink = '';
+    let timestamp = '';
+    while(true){
+      await this.whiteboardInput.waitForDownload()
+      downloadLink = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+      timestamp = Math.floor((new Date).getTime()/1000);
+      filename = `whiteboard-${timestamp}.png`
+      this.whiteboardInput.setDownloadLink(downloadLink, filename)
+      // Save image
+    }
   }
 
   storeCoordinates(point) {
@@ -160,40 +225,56 @@ class Whiteboard {
 
   sendCoordinates() {
     this.paths.push(this.currentPath);
+    if (this.currentPath.points.length == 1) {
+      this.drawPoint(this.currentPath)
+    }
     this.sendPathMethod(this.currentPath);
     this.currentPath = null;
   }
 
   receivePath(path) {
-    this.drawPath(path);
+    if (path.points.length == 1) {
+      this.drawPoint(path);
+    } else {
+      this.drawPath(path);
+    }
   }
 
   receiveBackfill(backfill) {
     backfill.forEach(path => {
-      this.drawPath(path);
+      if (path.points.length == 1) {
+        this.drawPoint(path);
+      } else {
+        this.drawPath(path);
+      }
     })
   }
 }
 
+class WhiteboardMenu {
+  waitForToolChange(){throw NOT_IMPLEMENTED_ERROR}
+  waitForDownload(){throw NOT_IMPLEMENTED_ERROR}
+  setDownloadLink(){throw NOT_IMPLEMENTED_ERROR}
+}
 
-class Ledge {
-  constructor(setToolMethod) {
-    this.setToolMethod = setToolMethod;
-    this.addEventListeners();
+class Ledge extends WhiteboardMenu {
+  constructor() {
+    super()
   }
 
-  addEventListeners() {
-    document.querySelectorAll("#ledge input[type='radio']").forEach(el => {
-      el.addEventListener("change", this.changeTool.bind(this));
-    });
+  async waitForToolChange(){
+    return waitForEventByQuery('#ledge input[type="radio"]', 'change');
   }
 
-  changeTool(event) {
-    if (event.target.value == "eraser") {
-      this.setToolMethod("white", ERASER_SIZE)
-    } else {
-      this.setToolMethod(event.target.value, MARKER_SIZE);
-    }
+  async waitForDownload(){
+    return waitForEventByQuery('#ledge button[value="download"]', 'click');
+  }
+
+  setDownloadLink(link, filename){
+    let downloadLink = document.getElementById('download-link');
+    downloadLink.href = link;
+    downloadLink.download = filename;
+    downloadLink.innerText = filename;
   }
 }
 
@@ -209,7 +290,6 @@ class App {
       this.receiveBackfill.bind(this),
     );
     this.whiteboard = new Whiteboard(this.sendPath.bind(this));
-    this.ledge = new Ledge(this.setTool.bind(this));
   }
   sendPath(path) {
     this.socket.sendPath(path, this.roomKey);
@@ -220,9 +300,6 @@ class App {
   receiveBackfill(backfill) {
     this.whiteboard.receiveBackfill(backfill);
   }
-  setTool(color, size) {
-    this.whiteboard.setTool(color, size);
-  }
 }
 
-let app = new App("http://localhost:5000");
+let app = new App("http://localhost:8710");

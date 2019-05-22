@@ -2,14 +2,8 @@
 
 ## How it works
 
-Start the server, and open up multiple instances of `index.html`. Drawings on one instances will show on both.
+1. Run `docker-compose up -d --build`
+2. Open `http://localhost:8710` in your browser.
+3. Draw
 
-## Future work
-X. Add color selector (including eraser)
-2. Add size selector
-3. Add image save
-4. Run on DB for persistance
-5. Export as image
-6. Cache HEAD so it can be truncated
-7. Add dots
-8. Undo
+To test collaboration, just open the same URL (complete with hash) in the navigation bar in a new tab or window.

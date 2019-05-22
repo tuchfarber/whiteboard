@@ -1,0 +1,152 @@
+html, body {
+  background-color: #eee;
+}
+
+#frame {
+  position: relative;
+  height: 600px;
+  width: 1024px;
+  border: 10px solid;
+  margin: 50px auto;
+  background: #fff;
+  border-image: linear-gradient(#9DB2A7, #9DB2A7) 50;
+
+  #whiteboard, #canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 600px;
+    width: 1024px;
+  }
+
+  #whiteboard {
+    z-index: 10;
+    opacity: 50%;
+  }
+
+  #canvas {
+    z-index: 5;
+  }
+
+  #ledge {
+    z-index: 15;
+    background-color:#ccc;
+    width:100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    div, div label{
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    [type=radio] { 
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      margin: 0;
+
+      &+.marker, &+.eraser, &+.toolsize {
+        cursor: pointer;
+      }
+
+      &:checked+.marker, &:checked+.eraser, &:checked+.toolsize{
+        border: 3px solid #666666;
+      }
+    }
+    .color-chooser {
+      width: 45%;
+
+      .marker, .eraser {
+        display: inline-block;
+        height: 20px;
+        width: 50px;
+        margin: 0 10px;
+      }
+
+      .marker {
+        border-radius: 50% 20% 20% 50%;
+
+        &.black{
+          background-color: black;
+        }
+
+        &.blue{
+          background-color: blue;
+        }
+
+        &.red{
+          background-color: red;
+        }
+
+        &.green{
+          background-color: green;
+        }
+      }
+
+      .eraser {
+        border-radius: 20% 20% 20% 20%;
+        background-color: white;
+      }
+    }
+
+    .size-chooser {
+      width: 15%;
+
+      .toolsize {
+        display: inline-block;
+        margin-left: 10px;
+        background-color: black;
+        border-radius: 50% 50% 50% 50%;
+
+        &.large{
+          height: 20px;
+          width: 20px;
+        }
+
+        &.medium{
+          height: 16px;
+          width: 16px;
+        }
+
+        &.small{
+          height: 12px;
+          width: 12px;
+        }
+      }
+    }
+    
+    .download-link {
+      width: 25%;
+      font-size: 12px;
+    }
+    
+    .actions {
+      display: inline-block;
+      height: 100%;
+      width: 25%;
+      box-sizing: border-box;
+
+      button {
+        display: inline-block;
+        height: 100%;
+        width: 100px;
+        border: 0;
+        background-color: initial;
+        box-sizing: border-box;
+
+        &:hover {
+          border: 1px solid #333333;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

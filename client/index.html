@@ -2,55 +2,62 @@
 <html>
 
 <head>
-  <meta charset="utf-8" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
-  <link rel="stylesheet" type="text/css" href="app.css">
+    <meta charset="utf-8" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
+    <link rel="stylesheet" type="text/css" href="app.css">
 </head>
 
 <body>
-  <div id="frame">
-    <div id="whiteboard" class="layer"></div>
-    <canvas id="canvas" class="layer" height="600px" width="1024px"></canvas>
-    <div id="ledge">
-      <span>
-        <label>
-            <input type="radio" name="marker" value="black" checked="true">
-            <div class="marker black"></div>
-        </label>
-        <label>
-            <input type="radio" name="marker" value="blue">
-            <div class="marker blue"></div>
-        </label>
-        <label>
-            <input type="radio" name="marker" value="red">
-            <div class="marker red"></div>
-        </label>
-        <label>
-            <input type="radio" name="marker" value="green">
-            <div class="marker green"></div>
-        </label>
-        <label>
-            <input type="radio" name="marker" value="eraser">
-            <div class="eraser"></div>
-        </label>
-      </span>
-      <span>
-        <label>
-            <input type="radio" name="toolsize" value="small"  checked="true">
-            <div class="toolsize small"></div>
-        </label>
-        <label>
-            <input type="radio" name="toolsize" value="medium">
-            <div class="toolsize medium"></div>
-        </label>
-        <label>
-            <input type="radio" name="toolsize" value="large">
-            <div class="toolsize large"></div>
-        </label>
-      </span>
+    <div id="frame">
+        <div id="whiteboard"></div>
+        <canvas id="canvas" height="600px" width="1024px"></canvas>
+        <div id="ledge">
+            <div class="color-chooser">
+                <label>
+                    <input type="radio" name="marker" value="black" checked="true">
+                    <div class="marker black"></div>
+                </label>
+                <label>
+                    <input type="radio" name="marker" value="blue">
+                    <div class="marker blue"></div>
+                </label>
+                <label>
+                    <input type="radio" name="marker" value="red">
+                    <div class="marker red"></div>
+                </label>
+                <label>
+                    <input type="radio" name="marker" value="green">
+                    <div class="marker green"></div>
+                </label>
+                <label>
+                    <input type="radio" name="marker" value="white">
+                    <div class="eraser"></div>
+                </label>
+            </div>
+            <div class="size-chooser">
+                <label>
+                    <input type="radio" name="toolsize" value="small" checked="true">
+                    <div class="toolsize small"></div>
+                </label>
+                <label>
+                    <input type="radio" name="toolsize" value="medium">
+                    <div class="toolsize medium"></div>
+                </label>
+                <label>
+                    <input type="radio" name="toolsize" value="large">
+                    <div class="toolsize large"></div>
+                </label>
+            </div>
+            <div class="download-link">
+                <a id="download-link"></a>
+            </div>
+            <div class="actions">
+                <button value="download">Download</button><button value="undo">Undo</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
+
 </html>
