@@ -6,9 +6,9 @@ const TOOL_COLORS = {
   black: '#000000',
 }
 const TOOL_WIDTHS = {
-  small: 4,
-  medium: 8,
-  large: 16,
+  small: 2,
+  medium: 4,
+  large: 8,
 };
 
 const NOT_IMPLEMENTED_ERROR = {
@@ -168,7 +168,11 @@ class Whiteboard {
     let prevPoint = null;
     this.context.lineJoin = "round";
     this.context.strokeStyle = path.color;
-    this.context.lineWidth = path.width;
+    if (path.color == '#ffffff') {
+      this.context.lineWidth = path.width * 2;
+    } else {
+      this.context.lineWidth = path.width;
+    }
 
     path.points.forEach((point, index) => {
       if (index !== 0) {
