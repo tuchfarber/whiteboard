@@ -1,6 +1,6 @@
 # pinned to last know working version (circa May 2019)
 python-socketio==4.0.2
-python-engineio==3.5.0
+python-engineio==3.8.2.post1
 eventlet==0.24.1
 redis==3.2.1
 tornado
