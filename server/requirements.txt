@@ -1,3 +1,6 @@
-python-socketio
-eventlet
-redis
+# pinned to last know working version (circa May 2019)
+python-socketio==4.0.2
+python-engineio==3.5.0
+eventlet==0.24.1
+redis==3.2.1
+tornado
